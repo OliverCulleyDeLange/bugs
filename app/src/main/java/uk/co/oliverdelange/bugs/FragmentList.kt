@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
@@ -19,6 +20,7 @@ class FragmentList : Fragment() {
     val items = (1..100).map {
         MyItem(it) {
             swiperefresh.isRefreshing = false
+            Toast.makeText(context, "Clicked!", Toast.LENGTH_SHORT).show()
         }
     }
 
