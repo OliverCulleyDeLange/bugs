@@ -1,0 +1,81 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.google.protobuf'
+}
+
+android {
+    namespace 'com.example.proto'
+    compileSdk 32
+
+    defaultConfig {
+        minSdk 23
+        targetSdk 32
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    sourceSets {
+        main {
+            proto {
+                srcDir "${rootProject.projectDir}/protos"
+            }
+        }
+    }
+}
+
+dependencies {
+    api 'pro.streem.pbandk:pbandk-runtime-jvm:0.12.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1"
+}
+
+
+protobuf {
+    generatedFilesBaseDir = "$projectDir/gen"
+    protoc {
+        /** Use a downloaded version of protoc so you don't have to download and install on your machine */
+        if (osdetector.os == "osx") {
+            artifact = 'com.google.protobuf:protoc:3.11.1:osx-x86_64'
+        } else {
+            artifact = 'com.google.protobuf:protoc:3.11.1'
+        }
+    }
+    plugins {
+        kotlin {
+            artifact = 'pro.streem.pbandk:protoc-gen-pbandk-jvm:0.12.1:jvm8@jar'
+        }
+    }
+    generateProtoTasks {
+        ofNonTest().each { task ->
+            task.builtins {
+                remove java // Don't output generated java proto bindings. We only want the kotlin
+            }
+            task.plugins {
+                kotlin {
+                    option 'log=debug'
+                    option 'DEBUG=true'
+                }
+            }
+        }
+    }
+}
+
+clean {
+    delete protobuf.generatedFilesBaseDir
+}
+
+// Put proto generation tasks in their own group so they're easier to find
+tasks.withType(com.google.protobuf.gradle.GenerateProtoTask) {
+    group = "proto"
+}

@@ -1,0 +1,8 @@
+syntax = "proto3";
+package analytics;
+option java_package = "com.example.test";
+
+message TEST {
+  string s = 1;
+}
+
