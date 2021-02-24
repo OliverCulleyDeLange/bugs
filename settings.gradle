@@ -1,2 +1,9 @@
 include ':app'
 rootProject.name = "My Application"
+setBinding(new Binding([gradle: this]))
+evaluate(new File(
+        settingsDir,
+        'ui_flutter/.android/include_flutter.groovy'
+))
+
+include ':ui_flutter'
