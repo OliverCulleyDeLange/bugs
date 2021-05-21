@@ -1,8 +1,16 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.jaredsburrows.spoon'
-
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
+    id 'androidx.navigation.safeargs.kotlin'
+//    id 'com.google.gms.google-services'
+    id 'com.mikepenz.aboutlibraries.plugin'
+//    id 'com.heapanalytics.android'
+    id 'com.facebook.testing.screenshot'
+    id 'com.jaredsburrows.spoon'
+//    id 'de.mannodermaus.android-junit5'
+}
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
@@ -22,6 +30,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        debug {
+//            applicationIdSuffix ".debug"
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -30,24 +41,187 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    testOptions {
+        animationsDisabled = true
+//        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+    }
+    buildFeatures.viewBinding = true
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+        unitTests.all {
+            useJUnitPlatform()
+        }
+        animationsDisabled = true
+//        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+    }
+    androidExtensions {
+        experimental = true
+    }
+    lintOptions {
+        abortOnError false
+    }
+    spoon {
+        debug = true
+        noAnimations = true
+        adbTimeout = 1
+        grantAll = true
+        codeCoverage = false
+        clearAppDataBeforeEachTest = true
+    }
+    configurations.all {
+        resolutionStrategy {
+            force 'androidx.test:monitor:1.4.0-alpha06'
+        }
+    }
 }
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.3.2'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation "org.jetbrains.kotlin:kotlin-reflect"
+    // https://developer.android.com/jetpack/androidx/versions
+    // https://developer.android.com/kotlin/ktx#use-ktx
+
+    /** Android / Google */
+    implementation "androidx.fragment:fragment-ktx:1.3.3"
+    debugImplementation "androidx.fragment:fragment-testing:1.3.3"
+
+    implementation "androidx.core:core-ktx:1.3.1"
     implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation "androidx.cardview:cardview:1.0.0"
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+    implementation "androidx.viewpager2:viewpager2:1.0.0"
 
+    implementation "androidx.navigation:navigation-fragment:$nav_version"
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
+    implementation 'com.google.android.gms:play-services-oss-licenses:17.0.0'
+
+    implementation 'com.google.android.play:core:1.8.0'
+    implementation 'com.google.android.play:core-ktx:1.8.1'
+
+    implementation 'com.google.android.material:material:1.3.0-alpha03'
+    implementation 'com.google.code.gson:gson:2.8.6'
+
+    implementation 'com.google.firebase:firebase-messaging:20.1.2' // Needed for intercom push notifications
+    implementation 'com.google.firebase:firebase-analytics-ktx:17.4.4'
+
+    implementation "androidx.room:room-runtime:2.2.4"
+    implementation "androidx.room:room-ktx:2.2.4"
+    kapt "androidx.room:room-compiler:2.2.4"
+    implementation "androidx.room:room-rxjava2:2.2.4"
+
+    implementation "androidx.work:work-runtime:2.3.3"
+    implementation "androidx.work:work-runtime-ktx:2.3.3"
+    implementation "androidx.work:work-rxjava2:2.3.3"
+
+    /** Debugging / Tools */
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
+    implementation "com.instabug.library:instabug:9.0.5"
+//    implementation 'com.facebook.stetho:stetho:1.5.1'
+    implementation 'fr.bipi.treessence:treessence:0.3.0'
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation 'io.intercom.android:intercom-sdk:9.0.0'
+//    implementation "com.heapanalytics.android:heap-android-client:$heapVersion"
+    implementation 'com.mixpanel.android:mixpanel-android:5.+'
+
+    /** UI */
+    implementation 'com.google.android.exoplayer:exoplayer:2.12.0'
+    implementation "io.coil-kt:coil:0.8.0"
+    implementation 'com.github.yalantis:ucrop:2.2.6'
+
+    implementation 'com.facebook.android:facebook-login:5.15.3'
+
+    implementation "com.xwray:groupie:2.8.0"
+    implementation "com.xwray:groupie-kotlin-android-extensions:2.8.0"
+
+    implementation 'com.afollestad.material-dialogs:core:3.3.0'
+    implementation 'com.afollestad.material-dialogs:datetime:3.3.0'
+    implementation 'com.afollestad.material-dialogs:lifecycle:3.2.1'
+    implementation 'com.afollestad.material-dialogs:bottomsheets:3.2.1'
+    implementation 'com.afollestad.material-dialogs:input:3.2.1'
+
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    implementation 'eo.view:batterymeter:2.0.0'
+    implementation 'io.apptik.widget:multislider:1.3'
+    implementation 'com.romandanylyk:pageindicatorview:1.0.3'
+    implementation 'me.zhanghai.android.fastscroll:library:1.1.4'
+    implementation "com.mikepenz:aboutlibraries-core:8.3.1"
+    implementation "com.mikepenz:aboutlibraries:8.3.1"
+    implementation 'com.sdsmdg.harjot:vectormaster:1.1.3'
+
+    /** App */
     implementation "io.insert-koin:koin-android:3.0.1"
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.2.1'
 
-    testImplementation 'junit:junit:4.13.2'
+    /** Rx stuff */
+    implementation "io.reactivex.rxjava2:rxjava:2.2.12"
+    implementation "io.reactivex.rxjava2:rxkotlin:2.4.0"
+    implementation "com.uber.autodispose:autodispose:1.4.0"
+    implementation "com.uber.autodispose:autodispose-android:1.4.0"
+    implementation "com.uber.autodispose:autodispose-android-archcomponents:1.4.0"
+    implementation "com.uber.rxdogtag:rxdogtag:1.0.0"
+    implementation "com.uber.rxdogtag:rxdogtag-autodispose:1.0.0"
+    // Rx phone sensors. Don't upgrade! See https://github.com/pwittchen/ReactiveSensors/blob/RxJava3.x/CHANGELOG.md
+    // 0.2.0 is last verion that uses rx2.0
+    api "com.polidea.rxandroidble2:rxandroidble:1.10.5"
+    implementation 'com.github.pwittchen:reactivesensors-rx2:0.2.0'
+    implementation 'com.jakewharton.rx2:replaying-share-kotlin:2.2.0'
+    implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
+    implementation 'com.jakewharton.rxrelay2:rxrelay:2.1.1'
+    implementation 'com.jakewharton.rxbinding3:rxbinding:3.0.0'
+    implementation 'com.github.pwittchen:reactivenetwork-rx2:3.0.6'
+
+
+    // TEST
+    def junitVersion = "5.7.0"
+    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
+    testCompileOnly('junit:junit:4.13') // To allow running JUnit 4 Tests
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:$junitVersion")
+
+    def kotestVersion = '4.2.5'
+    testImplementation "io.kotest:kotest-runner-junit5-jvm:$kotestVersion"
+    testImplementation "io.kotest:kotest-assertions-core-jvm:$kotestVersion"
+    testImplementation "org.assertj:assertj-core:3.14.0"
+
+    // Mockk
+    testImplementation "io.mockk:mockk:1.10.0"
+
+    // Mockito
+    testImplementation "org.mockito:mockito-inline:3.1.0"
+    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0") {
+        exclude group: 'org.jetbrains.kotlin'
+        exclude group: 'org.mockito'
+    }
+
+    testImplementation 'org.threeten:threetenbp:1.4.0'
+
+    def testVersion = "1.4.0-alpha06"
+    androidTestImplementation "androidx.test:runner:$testVersion"
+    androidTestImplementation "androidx.test:rules:$testVersion"
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation "androidx.test:runner:1.4.0-alpha06"
-    androidTestImplementation "androidx.test:rules:1.4.0-alpha06"
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0-alpha06'
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.4.0-alpha06'
 
+    //https://github.com/mockk/mockk/blob/master/ANDROID.md
     androidTestImplementation "io.mockk:mockk-android:1.10.0"
+
+//    androidTestImplementation 'com.github.tmurakami:dexopener:2.0.5'
+
+    androidTestImplementation 'com.agoda.kakao:kakao:2.3.3' // Espresso page objects
+
+    def espressoVersion = "3.4.0-alpha06"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
+
     androidTestImplementation 'com.squareup.spoon:spoon-client:2.0.0-SNAPSHOT'
 }

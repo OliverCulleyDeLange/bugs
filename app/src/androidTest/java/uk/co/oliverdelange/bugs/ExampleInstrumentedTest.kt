@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
@@ -77,6 +78,7 @@ class TestAppJUnitRunner : AndroidJUnitRunner() {
 
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
+    val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
 
     @Rule
     @JvmField
@@ -100,7 +102,6 @@ class ExampleInstrumentedTest {
 
     @Test
     fun test1() {
-        val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
         val koin = app.getKoin()
 
         val someDep = koin.get<SomeDependency>()
@@ -133,7 +134,6 @@ class ExampleInstrumentedTest {
 
     @Test
     fun test2() {
-        val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
         val koin = app.getKoin()
 
         val someDep = koin.get<SomeDependency>()
