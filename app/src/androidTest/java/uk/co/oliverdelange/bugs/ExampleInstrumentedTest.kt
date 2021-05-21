@@ -24,7 +24,6 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
-import java.lang.System.loadLibrary
 import kotlin.reflect.KClass
 
 class EspressoApp : Application() {
@@ -102,8 +101,8 @@ class ExampleInstrumentedTest {
  * */
 fun initRustBindings(vararg rustBindings: KClass<*>) {
     /** Using mockkStatic here limits us to using android P/28/9.0 and above*/
-    mockkStatic(FakeSystem::class) {
-        every { FakeSystem.loadLibrary(any()) } returns Unit
+    mockkStatic(System::class) {
+        every { System.loadLibrary(any()) } returns Unit
         rustBindings.forEach {
             mockkClass(it)
             println("Mocked ${it.simpleName}")

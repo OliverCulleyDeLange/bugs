@@ -59,7 +59,7 @@ class RustBinding constructor(val self: Long) {
     companion object {
         init {
             try {
-                FakeSystem.loadLibrary("someLib")
+                System.loadLibrary("someLib")
             } catch (e: UnsatisfiedLinkError) {
                 System.err.println("Native code library failed to load when creating ${this.javaClass.name} ")
                 e.printStackTrace()
