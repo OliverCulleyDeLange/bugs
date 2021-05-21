@@ -1,9 +1,11 @@
 package uk.co.oliverdelange.bugs
 
 import android.app.Application
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
@@ -28,7 +30,7 @@ open class BugsApp : Application() {
     }
 }
 
-class MainActivity : AppCompatActivity() {
+open class MainActivity : AppCompatActivity() {
 
     val dependency: SomeDependency by inject()
     val rust: RustBinding by inject()
@@ -37,9 +39,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        welcome.text = "${dependency.someFun()}.${SomeObject.doThing()}.${RustBinding.doIt1()}.${rust.doIt2()}"
+        welcome.text =
+            "${this.localClassName}.${dependency.someFun()}.${SomeObject.doThing()}.${RustBinding.doIt1()}.${rust.doIt2()}"
+        if (this is SecondaryActivity) {
+            next.isVisible = false
+        } else next.setOnClickListener {
+            startActivity(Intent(this, SecondaryActivity::class.java))
+        }
     }
 }
+
+class SecondaryActivity : MainActivity()
 
 class SomeDependency {
     fun someFun(): String {
@@ -57,12 +67,26 @@ object SomeObject {
 
 class RustBinding constructor(val self: Long) {
     companion object {
-        @JvmStatic private external fun _doIt1(): String
-        @JvmStatic private external fun _doIt2(): String
+        @JvmStatic
+        private external fun _doIt1(): String
+
+        @JvmStatic
+        private external fun _doIt2(): String
         fun doIt1(): String {
             Log.w("BUGS", "Do it 1 happened")
-            return _doIt1()
+            return try {
+                _doIt1()
+            } catch (E: Throwable) {
+                Log.w("BUGS", "Do it 1 failed, falling back")
+                "doIt1 failed"
+            }
         }
     }
-    fun doIt2() = RustBinding._doIt2()
+
+    fun doIt2(): String = try {
+        RustBinding._doIt2()
+    } catch (E: Throwable) {
+        Log.w("BUGS", "Do it 2 failed, falling back")
+        "doIt2 failed"
+    }
 }
