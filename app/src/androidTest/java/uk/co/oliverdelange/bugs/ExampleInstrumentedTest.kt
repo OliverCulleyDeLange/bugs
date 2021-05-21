@@ -14,7 +14,9 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import androidx.test.runner.AndroidJUnitRunner
+import com.squareup.spoon.SpoonRule
 import io.mockk.*
 import org.hamcrest.core.IsNot.not
 import org.junit.After
@@ -24,6 +26,7 @@ import org.junit.runner.RunWith
 
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Rule
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -75,6 +78,16 @@ class TestAppJUnitRunner : AndroidJUnitRunner() {
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
 
+    @Rule
+    @JvmField
+    val spoonRule = SpoonRule()
+
+    @Rule
+    @JvmField
+    var mGrantPermissionRule = GrantPermissionRule.grant(
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+    )
+
     @Before
     fun before() {
         androidx.test.espresso.intent.Intents.init()
@@ -106,11 +119,13 @@ class ExampleInstrumentedTest {
         with(ActivityScenario.launch(MainActivity::class.java)) {
             moveToState(Lifecycle.State.RESUMED)
             onView(withId(R.id.welcome)).check(matches(withText("MainActivity.1.2.3.4")))
+            onActivity { spoonRule.screenshot(it, "FirstActivity") }
 
             onView(withId(R.id.next)).perform(click())
             intended(hasComponent(SecondaryActivity::class.java.name))
 
             onView(withId(R.id.welcome)).check(matches(withText("SecondaryActivity.1.2.3.4")))
+            onActivity { spoonRule.screenshot(it, "SecondActivity") }
             onView(withId(R.id.next)).check(matches(not(isDisplayed())))
             close()
         }
