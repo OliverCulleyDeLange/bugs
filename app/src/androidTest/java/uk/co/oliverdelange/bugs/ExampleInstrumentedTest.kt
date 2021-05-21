@@ -69,7 +69,6 @@ class ExampleInstrumentedTest {
 
     @Test
     fun useAppContext() {
-        initRustBindings(RustBinding::class)
         assertEquals("uk.co.oliverdelange.bugs", targetContext.packageName)
 
         val app = targetContext.applicationContext as Application
@@ -90,22 +89,5 @@ class ExampleInstrumentedTest {
 
         activityRule.launchActivity(null)
         onView(withId(R.id.welcome)).check(matches(withText("1.2.3.4")))
-    }
-}
-
-/** Experimental way of mocking Rust Bindings
- * 'Load' the rust binding classes inside a mockkStatic block, which unmocks java.lang.System
- * after the block completes. The mockkClass(it) call triggers the init{} block of the
- * companion object where the android library is loaded. This means we can mock rust binding
- * classes normally after this code executes.
- * */
-fun initRustBindings(vararg rustBindings: KClass<*>) {
-    /** Using mockkStatic here limits us to using android P/28/9.0 and above*/
-    mockkStatic(System::class) {
-        every { System.loadLibrary(any()) } returns Unit
-        rustBindings.forEach {
-            mockkClass(it)
-            println("Mocked ${it.simpleName}")
-        }
     }
 }

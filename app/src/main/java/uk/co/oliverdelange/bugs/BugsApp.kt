@@ -57,15 +57,6 @@ object SomeObject {
 
 class RustBinding constructor(val self: Long) {
     companion object {
-        init {
-            try {
-                System.loadLibrary("someLib")
-            } catch (e: UnsatisfiedLinkError) {
-                System.err.println("Native code library failed to load when creating ${this.javaClass.name} ")
-                e.printStackTrace()
-                exitProcess(1)
-            }
-        }
         @JvmStatic private external fun _doIt1(): String
         @JvmStatic private external fun _doIt2(): String
         fun doIt1(): String {
