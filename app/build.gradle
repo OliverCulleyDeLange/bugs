@@ -10,6 +10,10 @@ plugins {
     id 'com.facebook.testing.screenshot'
     id 'com.jaredsburrows.spoon'
 //    id 'de.mannodermaus.android-junit5'
+    // from engine.gradle
+    id 'kotlinx-serialization'
+    id 'com.google.protobuf'
+//    id 'org.mozilla.rust-android-gradle.rust-android'
 }
 android {
     compileSdkVersion 30
@@ -25,25 +29,33 @@ android {
         testInstrumentationRunner "uk.co.oliverdelange.bugs.TestAppJUnitRunner"
     }
 
+    configurations.all {
+        resolutionStrategy {
+            force 'androidx.test:monitor:1.4.0-alpha06'
+        }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/atomicfu.kotlin_module'
+        exclude 'META-INF/kotlinx-serialization-runtime.kotlin_module'
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
+            //https://developer.android.com/studio/build/application-id
 //            applicationIdSuffix ".debug"
         }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    testOptions {
-        animationsDisabled = true
-//        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     buildFeatures.viewBinding = true
     testOptions {
@@ -62,6 +74,11 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    screenshots { //Facebook screenshot tool
+        referenceDir = "$projectDir/build/reports/screenshots"
+    }
+
     spoon {
         debug = true
         noAnimations = true
@@ -70,14 +87,20 @@ android {
         codeCoverage = false
         clearAppDataBeforeEachTest = true
     }
-    configurations.all {
-        resolutionStrategy {
-            force 'androidx.test:monitor:1.4.0-alpha06'
-        }
-    }
+    useLibrary 'android.test.runner'
+    useLibrary 'android.test.base'
+    useLibrary 'android.test.mock'
+
 }
 
 dependencies {
+    //from engine.gradle
+    api 'com.github.streem.pbandk:pbandk-runtime-jvm:0.8.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0"
+
+    implementation project(':rxredux')
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     // https://developer.android.com/jetpack/androidx/versions

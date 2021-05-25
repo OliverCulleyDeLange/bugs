@@ -1,2 +1,2 @@
-include ':app'
+include ':app', ':rxredux'
 rootProject.name = "My Application"

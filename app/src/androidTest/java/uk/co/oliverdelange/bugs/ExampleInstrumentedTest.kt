@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -45,6 +46,7 @@ class EspressoApp : Application() {
                 module {
                     single { mockk<SomeDependency>() }
                     single { mockk<RustBinding>() }
+                    single { AppStore(get(), get(), androidContext()) }
                 }
             ))
         }
@@ -119,15 +121,14 @@ class ExampleInstrumentedTest {
 
         with(ActivityScenario.launch(MainActivity::class.java)) {
             moveToState(Lifecycle.State.RESUMED)
-            onView(withId(R.id.welcome)).check(matches(withText("MainActivity.1.2.3.4")))
+            checkMainActivity()
             onActivity { spoonRule.screenshot(it, "FirstActivity") }
 
-            onView(withId(R.id.next)).perform(click())
+            goToSecondaryActivity()
             intended(hasComponent(SecondaryActivity::class.java.name))
 
-            onView(withId(R.id.welcome)).check(matches(withText("SecondaryActivity.1.2.3.4")))
+            checkSecondaryActivity()
             onActivity { spoonRule.screenshot(it, "SecondActivity") }
-            onView(withId(R.id.next)).check(matches(not(isDisplayed())))
             close()
         }
     }
@@ -151,14 +152,26 @@ class ExampleInstrumentedTest {
 
         with(ActivityScenario.launch(MainActivity::class.java)) {
             moveToState(Lifecycle.State.RESUMED)
-            onView(withId(R.id.welcome)).check(matches(withText("MainActivity.1.2.3.4")))
-
-            onView(withId(R.id.next)).perform(click())
-            intended(hasComponent(SecondaryActivity::class.java.name))
-
-            onView(withId(R.id.welcome)).check(matches(withText("SecondaryActivity.1.2.3.4")))
-            onView(withId(R.id.next)).check(matches(not(isDisplayed())))
+            for (x in 1..20){
+                checkMainActivity()
+                goToSecondaryActivity()
+                checkSecondaryActivity()
+                Espresso.pressBack()
+            }
             close()
         }
+    }
+
+    private fun goToSecondaryActivity() {
+        onView(withId(R.id.next)).perform(click())
+    }
+
+    private fun checkSecondaryActivity() {
+        onView(withId(R.id.welcome)).check(matches(withText("SecondaryActivity.1.2.3.4")))
+        onView(withId(R.id.next)).check(matches(not(isDisplayed())))
+    }
+
+    private fun checkMainActivity() {
+        onView(withId(R.id.welcome)).check(matches(withText("MainActivity.1.2.3.4")))
     }
 }
