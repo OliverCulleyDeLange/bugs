@@ -1,9 +1,12 @@
 package uk.co.oliverdelange.instabugtest
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Application
 import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.PowerManager
 import android.os.PowerManager.ACTION_POWER_SAVE_MODE_CHANGED
@@ -16,6 +19,9 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import com.instabug.library.Instabug
 import com.instabug.library.invocation.InstabugInvocationEvent
@@ -33,7 +39,7 @@ import uk.co.oliverdelange.instabugtest.ui.theme.InstabugTestTheme
 import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicBoolean
 
-public class MyApp : Application(){
+public class MyApp : Application() {
     override fun onCreate() {
         super.onCreate()
         Instabug.Builder(this, "some key")
@@ -46,7 +52,7 @@ public class MyApp : Application(){
     }
 }
 
-class SyncWorker : Completable(){
+class SyncWorker : Completable() {
     override fun subscribeActual(observer: CompletableObserver?) {
         val atomicBoolean = AtomicBoolean(true)
         observer?.onSubscribe(Disposables.fromAction {
@@ -55,10 +61,19 @@ class SyncWorker : Completable(){
         do {
             try {
                 Thread.sleep(1000)
-            } catch(t: Throwable){
+            } catch (t: Throwable) {
                 Log.e("INSTABUG-BUG", "ERR sleeping", t)
             }
         } while (atomicBoolean.get())
+    }
+}
+
+class FragActivity : FragmentActivity() {
+    @SuppressLint("AutoDispose")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // We use this in our app, but the standard checkSelfPermissions says denied too
+        permissionRequest(this).subscribe()
     }
 }
 
@@ -74,6 +89,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        val storagePermission = ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+        Log.w(":::", "WRITE_EXTERNAL_STORAGE granted = $storagePermission")
     }
 
     override fun onResume() {
