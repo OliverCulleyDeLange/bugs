@@ -3,28 +3,16 @@ package uk.co.oliverdelange.instabugtest
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Application
-import android.bluetooth.BluetoothDevice
-import android.content.Intent
-import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.PowerManager
-import android.os.PowerManager.ACTION_POWER_SAVE_MODE_CHANGED
 import android.util.Log
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.app.ActivityCompat
-import androidx.fragment.app.Fragment
+import android.widget.Button
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
+import com.google.android.material.snackbar.Snackbar
 import com.instabug.library.Instabug
 import com.instabug.library.invocation.InstabugInvocationEvent
+import com.tbruyelle.rxpermissions2.Permission
+import com.tbruyelle.rxpermissions2.RxPermissions
 import com.uber.autodispose.ScopeProvider
 import com.uber.autodispose.android.lifecycle.scope
 import com.uber.autodispose.autoDispose
@@ -35,8 +23,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.disposables.Disposables
 import io.reactivex.schedulers.Schedulers
-import uk.co.oliverdelange.instabugtest.ui.theme.InstabugTestTheme
-import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicBoolean
 
 public class MyApp : Application() {
@@ -68,41 +54,50 @@ class SyncWorker : Completable() {
     }
 }
 
-class FragActivity : FragmentActivity() {
+class MainActivity : FragmentActivity() {
+
     @SuppressLint("AutoDispose")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // We use this in our app, but the standard checkSelfPermissions says denied too
-        permissionRequest(this).subscribe()
-    }
-}
-
-class MainActivity : ComponentActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            InstabugTestTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
-                    Greeting("Android")
-                }
-            }
+        setContentView(R.layout.activity_main)
+        findViewById<Button>(R.id.button).setOnClickListener {
+            Log.w("TAG", "Showing instabug")
+            Instabug.show()
         }
-        val storagePermission = ActivityCompat.checkSelfPermission(
-            this,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED
-        Log.w(":::", "WRITE_EXTERNAL_STORAGE granted = $storagePermission")
+        permissionRequest(this).subscribe()
     }
 
     override fun onResume() {
         super.onResume()
         SyncWorker().toObservable<Unit>()
-            .subscribeOn(Schedulers.single()) // instabug can't be shown
-//            .subscribeOn(Schedulers.io()) // Instabug can be shown
+            .subscribeOn(Schedulers.single()) // Instabug can't be shown on v9.0.5
+//            .subscribeOn(Schedulers.io()) // Instabug can be shown on v9.0.5
             .connect(scope(untilEvent = Lifecycle.Event.ON_PAUSE))
     }
+
+    fun permissionRequest(activity: FragmentActivity): Observable<Permission> {
+        val rxPermissions = RxPermissions(activity).apply { setLogging(true) }
+        return doPermissionRequest(rxPermissions)
+    }
+
+    private fun doPermissionRequest(rxPermissions: RxPermissions) = rxPermissions
+        .requestEach(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        .doOnNext { permission ->
+            when {
+                permission.granted -> {
+                    Log.i(":::", "GRANTED $permission")
+                    Snackbar.make(findViewById(R.id.root), "Granted $permission", Snackbar.LENGTH_SHORT).show()
+                }
+                permission.shouldShowRequestPermissionRationale -> {
+                    Log.i(":::", "SHOW RATIONALE $permission")
+                    Snackbar.make(findViewById(R.id.root), "Rationale required for $permission", Snackbar.LENGTH_SHORT).show()
+                }
+                else -> {
+                    Log.i(":::", "DENIED $permission")
+                    Snackbar.make(findViewById(R.id.root), "DENIED $permission", Snackbar.LENGTH_SHORT).show()
+                }
+            }
+        }
 }
 
 fun <T> Observable<T>.connect(scope: ScopeProvider, stateHandler: (T) -> Unit = {}): Disposable =
@@ -111,19 +106,3 @@ fun <T> Observable<T>.connect(scope: ScopeProvider, stateHandler: (T) -> Unit = 
         .observeOn(AndroidSchedulers.mainThread())
         .autoDispose(scope)
         .subscribe(stateHandler)
-
-
-@Composable
-fun Greeting(name: String) {
-    Button(onClick = { Instabug.show() }) {
-        Text(text = "Show")
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    InstabugTestTheme {
-        Greeting("Android")
-    }
-}
