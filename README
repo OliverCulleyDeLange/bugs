@@ -1,0 +1,2 @@
+Place rustJniLibs/android/arm64-v8a/libandroid.so into app/build/rustJniLibs/android/arm64-v8a/ to mimick building the engine from our rust source code.
+Obviously we don't want to share all that goodness with ya'll ;)
