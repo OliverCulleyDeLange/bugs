@@ -6,11 +6,20 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/crash_native"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Show Instabug"
+        android:text="Crash native plz"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/crash_android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Crash android plz"
+        app:layout_constraintStart_toEndOf="@+id/crash_native"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

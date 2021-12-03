@@ -1,2 +1,618 @@
 Place rustJniLibs/android/arm64-v8a/libandroid.so into app/build/rustJniLibs/android/arm64-v8a/ to mimick building the engine from our rust source code.
 Obviously we don't want to share all that goodness with ya'll ;)
+
+Logs from successful app open after a native crash in Application.onCreate():
+
+Intersting bits:
+1) Why are there no sessions ready to sync. The app just crashed
+2021-12-03 15:51:09.359 18868-21848/uk.co.oliverdelange.instabugtest I/IB-SessionsSyncManager: No sessions ready for sync. Skipping...
+
+
+2021-12-03 15:51:09.133 18868-18868/uk.co.oliverdelange.instabugtest I/IB-Instabug: setDebugEnabled true
+2021-12-03 15:51:09.133 18868-18868/uk.co.oliverdelange.instabugtest D/IB-Instabug: building sdk with default state
+2021-12-03 15:51:09.145 18868-18868/uk.co.oliverdelange.instabugtest D/IB-Instabug: building sdk in BG
+2021-12-03 15:51:09.146 18868-21823/uk.co.oliverdelange.instabugtest D/IB-Instabug: Building Instabug From BG thread, thread name: pool-3-thread-1
+2021-12-03 15:51:09.147 18868-18868/uk.co.oliverdelange.instabugtest D/IB-CrashReporting: CrashReporting setState:ENABLED
+2021-12-03 15:51:09.148 18868-18868/uk.co.oliverdelange.instabugtest D/IB-API Checker: CrashReporting.setState
+2021-12-03 15:51:09.148 18868-18868/uk.co.oliverdelange.instabugtest D/IB-API Checker: CrashReporting.setNDKCrashesState
+2021-12-03 15:51:09.157 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Setting INSTABUG state to ENABLED
+2021-12-03 15:51:09.157 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugDelegate: delegate setInstabugState to BUILDING
+2021-12-03 15:51:09.159 18868-18868/uk.co.oliverdelange.instabugtest W/:::IB-T:::(  main:2)InstabugWaiter: Waiting for instabug to become ready before continuing. Timeout: 200
+2021-12-03 15:51:09.160 18868-21823/uk.co.oliverdelange.instabugtest D/IB-CrashPlugin: CrashPlugin init
+2021-12-03 15:51:09.160 18868-18868/uk.co.oliverdelange.instabugtest W/:::IB-T:::(  main:2)InstabugWaiter: LOOP @ 1638546669159: Instabug ready: false state: BUILDING
+2021-12-03 15:51:09.160 18868-21823/uk.co.oliverdelange.instabugtest D/IB-CrashPlugin: setting Uncaught Exception Handler com.instabug.crash.InstabugUncaughtExceptionHandler
+2021-12-03 15:51:09.160 18868-21823/uk.co.oliverdelange.instabugtest D/IB-PluginsManager: pluginClassPath: com.instabug.crash.CrashPlugin
+2021-12-03 15:51:09.168 18868-21823/uk.co.oliverdelange.instabugtest D/IB-PluginsManager: pluginClassPath: com.instabug.ndkcrash.NDKCrashPlugin
+2021-12-03 15:51:09.170 18868-21823/uk.co.oliverdelange.instabugtest D/IB-PluginsManager: pluginClassPath: com.instabug.survey.SurveyPlugin
+2021-12-03 15:51:09.170 18868-21823/uk.co.oliverdelange.instabugtest D/IB-PluginsManager: pluginClassPath: com.instabug.chat.ChatPlugin
+2021-12-03 15:51:09.170 18868-21823/uk.co.oliverdelange.instabugtest D/IB-PluginsManager: pluginClassPath: com.instabug.bug.BugPlugin
+2021-12-03 15:51:09.171 18868-21823/uk.co.oliverdelange.instabugtest D/IB-PluginsManager: pluginClassPath: com.instabug.featuresrequest.FeaturesRequestPlugin
+2021-12-03 15:51:09.172 18868-21823/uk.co.oliverdelange.instabugtest V/IB-DatabaseManager: Initializing database manager
+2021-12-03 15:51:09.173 18868-21823/uk.co.oliverdelange.instabugtest D/IB-PluginsManager: pluginClassPath: com.instabug.apm.APMPlugin
+2021-12-03 15:51:09.174 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InvocationManager: initializing invocationManager
+2021-12-03 15:51:09.175 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.crash.CrashPlugin@6f62626
+2021-12-03 15:51:09.175 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.ndkcrash.NDKCrashPlugin@dd20267
+2021-12-03 15:51:09.175 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.survey.SurveyPlugin@1d09814
+2021-12-03 15:51:09.175 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.chat.ChatPlugin@79f08bd
+2021-12-03 15:51:09.176 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.176 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: IN_APP_MESSAGING return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.176 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.176 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: REPLIES return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.178 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found chats_memory_cache returning null
+2021-12-03 15:51:09.179 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found chats_memory_cache returning null
+2021-12-03 15:51:09.179 18868-21830/uk.co.oliverdelange.instabugtest D/IB-ChatsCacheManager: In-memory cache not found, loading it from disk null
+2021-12-03 15:51:09.179 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found chats_disk_cache returning null
+2021-12-03 15:51:09.179 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found chats_memory_cache returning null
+2021-12-03 15:51:09.179 18868-21830/uk.co.oliverdelange.instabugtest V/IB-CacheManager: Caches to be migrated null - null
+2021-12-03 15:51:09.179 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with these key(chats_disk_cache) was found to migrate from
+2021-12-03 15:51:09.179 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found chats_memory_cache returning null
+2021-12-03 15:51:09.179 18868-21830/uk.co.oliverdelange.instabugtest D/IB-ChatsCacheManager: In-memory cache found
+2021-12-03 15:51:09.179 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found chats_memory_cache returning null
+2021-12-03 15:51:09.179 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.bug.BugPlugin@7b873b9
+2021-12-03 15:51:09.180 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.180 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: BUG_REPORTING return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.185 18868-18868/uk.co.oliverdelange.instabugtest W/:::IB-T:::(  main:2)InstabugWaiter: LOOP @ 1638546669185: Instabug ready: false state: BUILDING
+2021-12-03 15:51:09.192 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.192 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: IN_APP_MESSAGING return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.192 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.192 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: CHATS return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.194 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.featuresrequest.FeaturesRequestPlugin@f639275
+2021-12-03 15:51:09.195 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: FEATURE_REQUESTS return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.195 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental Feature FEATURE_REQUESTS availability not found, returning false
+2021-12-03 15:51:09.195 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.195 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: FEATURE_REQUESTS return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.195 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.apm.APMPlugin@1d78a7b
+2021-12-03 15:51:09.195 18868-21823/uk.co.oliverdelange.instabugtest I/IB-BugReportingWrapper: setReportTypes: 0
+2021-12-03 15:51:09.195 18868-21823/uk.co.oliverdelange.instabugtest I/IB-BugReportingWrapper: setReportTypes: 1
+2021-12-03 15:51:09.195 18868-21823/uk.co.oliverdelange.instabugtest I/IB-BugReportingWrapper: setReportTypes: 2
+2021-12-03 15:51:09.196 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.196 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: BUG_REPORTING return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.196 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Setting CHATS state to ENABLED
+2021-12-03 15:51:09.196 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.crash.CrashPlugin@6f62626
+2021-12-03 15:51:09.196 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.ndkcrash.NDKCrashPlugin@dd20267
+2021-12-03 15:51:09.196 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.survey.SurveyPlugin@1d09814
+2021-12-03 15:51:09.196 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.chat.ChatPlugin@79f08bd
+2021-12-03 15:51:09.196 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.196 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: IN_APP_MESSAGING return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.196 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.196 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: REPLIES return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.196 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found chats_memory_cache returning null
+2021-12-03 15:51:09.196 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found chats_memory_cache returning null
+2021-12-03 15:51:09.196 18868-21830/uk.co.oliverdelange.instabugtest D/IB-ChatsCacheManager: In-memory cache not found, loading it from disk null
+2021-12-03 15:51:09.196 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found chats_disk_cache returning null
+2021-12-03 15:51:09.196 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found chats_memory_cache returning null
+2021-12-03 15:51:09.196 18868-21830/uk.co.oliverdelange.instabugtest V/IB-CacheManager: Caches to be migrated null - null
+2021-12-03 15:51:09.196 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with these key(chats_disk_cache) was found to migrate from
+2021-12-03 15:51:09.196 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found chats_memory_cache returning null
+2021-12-03 15:51:09.197 18868-21830/uk.co.oliverdelange.instabugtest D/IB-ChatsCacheManager: In-memory cache found
+2021-12-03 15:51:09.197 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found chats_memory_cache returning null
+2021-12-03 15:51:09.197 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.bug.BugPlugin@7b873b9
+2021-12-03 15:51:09.197 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.197 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: BUG_REPORTING return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.201 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.201 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: IN_APP_MESSAGING return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.201 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.201 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: CHATS return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.203 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.featuresrequest.FeaturesRequestPlugin@f639275
+2021-12-03 15:51:09.203 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: FEATURE_REQUESTS return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.203 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental Feature FEATURE_REQUESTS availability not found, returning false
+2021-12-03 15:51:09.203 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.203 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: FEATURE_REQUESTS return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.203 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.apm.APMPlugin@1d78a7b
+2021-12-03 15:51:09.204 18868-21823/uk.co.oliverdelange.instabugtest V/IB-UserAttributesCacheManager: Creating UserAttributes disk cache
+2021-12-03 15:51:09.206 18868-21823/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found user_attributes_disk_cache returning null
+2021-12-03 15:51:09.206 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugDelegate: delegate setInstabugState to ENABLED
+2021-12-03 15:51:09.206 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugStateProvider: Setting Instabug SDK state to ENABLED
+2021-12-03 15:51:09.206 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.206 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.206 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugDelegate: delegate start() : instabugAvailable = true, instabugEnabled = true
+2021-12-03 15:51:09.206 18868-21823/uk.co.oliverdelange.instabugtest D/IB-CrashPlugin: CrashPlugin start
+2021-12-03 15:51:09.207 18868-21823/uk.co.oliverdelange.instabugtest D/IB-CrashPlugin: CrashPlugin checking EncryptorVersion
+2021-12-03 15:51:09.210 18868-18868/uk.co.oliverdelange.instabugtest W/:::IB-T:::(  main:2)InstabugWaiter: WAITED FOR INSTABUG. ready: true state: ENABLED
+2021-12-03 15:51:09.215 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.215 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.215 18868-21823/uk.co.oliverdelange.instabugtest D/IB-Instabug-NDKCrashReporting: onSDKStarted
+2021-12-03 15:51:09.218 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.218 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: CRASH_REPORTING return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.218 18868-21823/uk.co.oliverdelange.instabugtest D/IB-Instabug-NDKCrashReporting: ndk crash reporting is enabled
+2021-12-03 15:51:09.226 18868-21823/uk.co.oliverdelange.instabugtest D/IB-AnnouncementManager: Announcement Manager initialized
+2021-12-03 15:51:09.231 18868-18868/uk.co.oliverdelange.instabugtest I/IB-b: Setting app locale to en_US
+2021-12-03 15:51:09.231 18868-18868/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.231 18868-18868/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: TRACK_USER_STEPS return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.231 18868-18868/uk.co.oliverdelange.instabugtest D/IB-InstabugInternalTrackingDelegate: MainActivity created
+2021-12-03 15:51:09.232 18868-18868/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.232 18868-18868/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: REPRO_STEPS return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.234 18868-18868/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: INSTABUG return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.234 18868-18868/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: REPRO_STEPS return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.239 18868-21846/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found chats_disk_cache returning null
+2021-12-03 15:51:09.240 18868-21846/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found read_queue_disk_cache_key returning null
+2021-12-03 15:51:09.240 18868-21846/uk.co.oliverdelange.instabugtest V/IB-ChatsCacheManager: cleanupChats
+2021-12-03 15:51:09.240 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found chats_memory_cache returning null
+2021-12-03 15:51:09.240 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found chats_memory_cache returning null
+2021-12-03 15:51:09.240 18868-21830/uk.co.oliverdelange.instabugtest D/IB-ChatsCacheManager: In-memory cache not found, loading it from disk null
+2021-12-03 15:51:09.240 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found chats_memory_cache returning null
+2021-12-03 15:51:09.240 18868-21830/uk.co.oliverdelange.instabugtest V/IB-CacheManager: Caches to be migrated com.instabug.library.internal.storage.cache.OnDiskCache@9db3e12 - null
+2021-12-03 15:51:09.240 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found chats_memory_cache returning null
+2021-12-03 15:51:09.240 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: Invalidated migratingTo cache
+2021-12-03 15:51:09.243 18868-21830/uk.co.oliverdelange.instabugtest I/IB-CacheFileMemoryAvailablePredicate: CacheFileMemoryAvailablePredicate is running test, results: true
+2021-12-03 15:51:09.244 18868-21830/uk.co.oliverdelange.instabugtest W/IB-CacheManager: Cache to migrate from doesn't contain any elements, not going further with the migration
+2021-12-03 15:51:09.245 18868-21830/uk.co.oliverdelange.instabugtest D/IB-ChatsCacheManager: In-memory cache restored from disk, 0 elements restored
+2021-12-03 15:51:09.246 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature INSTABUG saved availability false restored from shared preferences
+2021-12-03 15:51:09.247 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature INSTABUG saved availability true restored from shared preferences
+2021-12-03 15:51:09.247 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Not restoring feature INSTABUG state as it's already set to ENABLED
+2021-12-03 15:51:09.247 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature CRASH_REPORTING saved availability false restored from shared preferences
+2021-12-03 15:51:09.247 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature CRASH_REPORTING saved availability true restored from shared preferences
+2021-12-03 15:51:09.251 18868-21830/uk.co.oliverdelange.instabugtest D/IB-ChatsCacheManager: In-memory cache found
+2021-12-03 15:51:09.251 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature CRASH_REPORTING state ENABLED from shared preferences
+2021-12-03 15:51:09.251 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature ANR_REPORTING saved availability false restored from shared preferences
+2021-12-03 15:51:09.253 18868-21830/uk.co.oliverdelange.instabugtest D/IB-CacheManager: Invalidated migratingTo cache
+2021-12-03 15:51:09.253 18868-21830/uk.co.oliverdelange.instabugtest D/IB-OnDiskCache: Cache file  exist
+2021-12-03 15:51:09.254 18868-21830/uk.co.oliverdelange.instabugtest W/IB-CacheManager: Cache to migrate from doesn't contain any elements, not going further with the migration
+2021-12-03 15:51:09.254 18868-21830/uk.co.oliverdelange.instabugtest D/IB-ChatsCacheManager: In-memory cache had been persisted on-disk
+2021-12-03 15:51:09.259 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature ANR_REPORTING saved availability true restored from shared preferences
+2021-12-03 15:51:09.260 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature ANR_REPORTING state ENABLED from shared preferences
+2021-12-03 15:51:09.260 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature PUSH_NOTIFICATION saved availability false restored from shared preferences
+2021-12-03 15:51:09.261 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature PUSH_NOTIFICATION saved availability false restored from shared preferences
+2021-12-03 15:51:09.261 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature PUSH_NOTIFICATION state ENABLED from shared preferences
+2021-12-03 15:51:09.262 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature WHITE_LABELING saved availability false restored from shared preferences
+2021-12-03 15:51:09.262 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature WHITE_LABELING saved availability false restored from shared preferences
+2021-12-03 15:51:09.263 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature WHITE_LABELING state ENABLED from shared preferences
+2021-12-03 15:51:09.263 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature IN_APP_MESSAGING saved availability false restored from shared preferences
+2021-12-03 15:51:09.264 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature IN_APP_MESSAGING saved availability false restored from shared preferences
+2021-12-03 15:51:09.264 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature IN_APP_MESSAGING state ENABLED from shared preferences
+2021-12-03 15:51:09.264 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature TRACK_USER_STEPS saved availability false restored from shared preferences
+2021-12-03 15:51:09.265 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature TRACK_USER_STEPS saved availability false restored from shared preferences
+2021-12-03 15:51:09.266 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature TRACK_USER_STEPS state ENABLED from shared preferences
+2021-12-03 15:51:09.266 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature REPRO_STEPS saved availability false restored from shared preferences
+2021-12-03 15:51:09.267 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature REPRO_STEPS saved availability false restored from shared preferences
+2021-12-03 15:51:09.267 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature REPRO_STEPS state ENABLED from shared preferences
+2021-12-03 15:51:09.267 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature MULTIPLE_ATTACHMENTS saved availability false restored from shared preferences
+2021-12-03 15:51:09.268 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature MULTIPLE_ATTACHMENTS saved availability true restored from shared preferences
+2021-12-03 15:51:09.268 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature MULTIPLE_ATTACHMENTS state ENABLED from shared preferences
+2021-12-03 15:51:09.269 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature INSTABUG_LOGS saved availability false restored from shared preferences
+2021-12-03 15:51:09.269 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature INSTABUG_LOGS saved availability true restored from shared preferences
+2021-12-03 15:51:09.270 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature INSTABUG_LOGS state ENABLED from shared preferences
+2021-12-03 15:51:09.270 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature USER_DATA saved availability false restored from shared preferences
+2021-12-03 15:51:09.271 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature USER_DATA saved availability true restored from shared preferences
+2021-12-03 15:51:09.271 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature USER_DATA state ENABLED from shared preferences
+2021-12-03 15:51:09.272 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature CONSOLE_LOGS saved availability false restored from shared preferences
+2021-12-03 15:51:09.272 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature CONSOLE_LOGS saved availability true restored from shared preferences
+2021-12-03 15:51:09.273 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature CONSOLE_LOGS state ENABLED from shared preferences
+2021-12-03 15:51:09.273 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature SURVEYS saved availability false restored from shared preferences
+2021-12-03 15:51:09.274 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature SURVEYS saved availability true restored from shared preferences
+2021-12-03 15:51:09.274 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature SURVEYS state ENABLED from shared preferences
+2021-12-03 15:51:09.274 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature VIEW_HIERARCHY_V2 saved availability false restored from shared preferences
+2021-12-03 15:51:09.275 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature VIEW_HIERARCHY_V2 saved availability false restored from shared preferences
+2021-12-03 15:51:09.275 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature VIEW_HIERARCHY_V2 state DISABLED from shared preferences
+2021-12-03 15:51:09.275 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature USER_EVENTS saved availability false restored from shared preferences
+2021-12-03 15:51:09.276 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature USER_EVENTS saved availability true restored from shared preferences
+2021-12-03 15:51:09.276 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature USER_EVENTS state ENABLED from shared preferences
+2021-12-03 15:51:09.277 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature DISCLAIMER saved availability false restored from shared preferences
+2021-12-03 15:51:09.277 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature DISCLAIMER saved availability false restored from shared preferences
+2021-12-03 15:51:09.277 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature DISCLAIMER state ENABLED from shared preferences
+2021-12-03 15:51:09.278 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature SESSION_PROFILER saved availability false restored from shared preferences
+2021-12-03 15:51:09.278 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature SESSION_PROFILER saved availability false restored from shared preferences
+2021-12-03 15:51:09.279 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature SESSION_PROFILER state ENABLED from shared preferences
+2021-12-03 15:51:09.279 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature FEATURE_REQUESTS saved availability false restored from shared preferences
+2021-12-03 15:51:09.279 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature FEATURE_REQUESTS saved availability false restored from shared preferences
+2021-12-03 15:51:09.280 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature FEATURE_REQUESTS state ENABLED from shared preferences
+2021-12-03 15:51:09.280 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature VP_CUSTOMIZATION saved availability false restored from shared preferences
+2021-12-03 15:51:09.281 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature VP_CUSTOMIZATION saved availability false restored from shared preferences
+2021-12-03 15:51:09.281 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature VP_CUSTOMIZATION state DISABLED from shared preferences
+2021-12-03 15:51:09.281 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature ANNOUNCEMENTS saved availability false restored from shared preferences
+2021-12-03 15:51:09.281 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature ANNOUNCEMENTS saved availability true restored from shared preferences
+2021-12-03 15:51:09.282 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature ANNOUNCEMENTS state ENABLED from shared preferences
+2021-12-03 15:51:09.282 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature BUG_REPORTING saved availability false restored from shared preferences
+2021-12-03 15:51:09.282 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature BUG_REPORTING saved availability true restored from shared preferences
+2021-12-03 15:51:09.283 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature BUG_REPORTING state ENABLED from shared preferences
+2021-12-03 15:51:09.283 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature CHATS saved availability false restored from shared preferences
+2021-12-03 15:51:09.283 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature CHATS saved availability true restored from shared preferences
+2021-12-03 15:51:09.284 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Not restoring feature CHATS state as it's already set to ENABLED
+2021-12-03 15:51:09.284 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature DEPRECATED_CHATS saved availability false restored from shared preferences
+2021-12-03 15:51:09.284 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature DEPRECATED_CHATS saved availability true restored from shared preferences
+2021-12-03 15:51:09.285 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature DEPRECATED_CHATS state ENABLED from shared preferences
+2021-12-03 15:51:09.285 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature REPLIES saved availability false restored from shared preferences
+2021-12-03 15:51:09.286 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature REPLIES saved availability true restored from shared preferences
+2021-12-03 15:51:09.286 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature REPLIES state ENABLED from shared preferences
+2021-12-03 15:51:09.286 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature BE_USER_ATTRIBUTES saved availability false restored from shared preferences
+2021-12-03 15:51:09.287 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature BE_USER_ATTRIBUTES saved availability true restored from shared preferences
+2021-12-03 15:51:09.287 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature BE_USER_ATTRIBUTES state ENABLED from shared preferences
+2021-12-03 15:51:09.287 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature REPORT_PHONE_NUMBER saved availability false restored from shared preferences
+2021-12-03 15:51:09.289 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature REPORT_PHONE_NUMBER saved availability false restored from shared preferences
+2021-12-03 15:51:09.290 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature REPORT_PHONE_NUMBER state DISABLED from shared preferences
+2021-12-03 15:51:09.290 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature VZ_MESSAGES_CUSTOM_APPRATING_UI saved availability false restored from shared preferences
+2021-12-03 15:51:09.291 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature VZ_MESSAGES_CUSTOM_APPRATING_UI saved availability false restored from shared preferences
+2021-12-03 15:51:09.291 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature VZ_MESSAGES_CUSTOM_APPRATING_UI state DISABLED from shared preferences
+2021-12-03 15:51:09.291 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature SDK_ANALYTICS saved availability false restored from shared preferences
+2021-12-03 15:51:09.292 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature SDK_ANALYTICS saved availability false restored from shared preferences
+2021-12-03 15:51:09.293 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature SDK_ANALYTICS state DISABLED from shared preferences
+2021-12-03 15:51:09.293 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature DATABASE_TRANSACTIONS_DISABLED saved availability false restored from shared preferences
+2021-12-03 15:51:09.293 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature DATABASE_TRANSACTIONS_DISABLED saved availability true restored from shared preferences
+2021-12-03 15:51:09.293 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature DATABASE_TRANSACTIONS_DISABLED state ENABLED from shared preferences
+2021-12-03 15:51:09.294 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature BUILD_OPTIMIZATION saved availability false restored from shared preferences
+2021-12-03 15:51:09.294 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature BUILD_OPTIMIZATION saved availability true restored from shared preferences
+2021-12-03 15:51:09.294 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature BUILD_OPTIMIZATION state ENABLED from shared preferences
+2021-12-03 15:51:09.295 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature PRODUCTION_USAGE_DETECTION saved availability false restored from shared preferences
+2021-12-03 15:51:09.295 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature PRODUCTION_USAGE_DETECTION saved availability true restored from shared preferences
+2021-12-03 15:51:09.296 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature PRODUCTION_USAGE_DETECTION state DISABLED from shared preferences
+2021-12-03 15:51:09.296 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental feature ENCRYPTION saved availability false restored from shared preferences
+2021-12-03 15:51:09.296 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature ENCRYPTION saved availability true restored from shared preferences
+2021-12-03 15:51:09.297 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Restored feature ENCRYPTION state ENABLED from shared preferences
+2021-12-03 15:51:09.298 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugDelegate: Initializing the exception handler
+2021-12-03 15:51:09.298 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugDelegate: setting Uncaught Exception Handler com.instabug.library.crash.InstabugUncaughtExceptionHandler
+2021-12-03 15:51:09.298 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugDelegate: Starting Instabug SDK functionality
+2021-12-03 15:51:09.298 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugDelegate: delegate setInstabugState to ENABLED
+2021-12-03 15:51:09.298 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature INSTABUG state is already ENABLED ignoring
+2021-12-03 15:51:09.299 18868-21823/uk.co.oliverdelange.instabugtest V/IB-InstabugDelegate: show intro dialog if valid
+2021-12-03 15:51:09.299 18868-21823/uk.co.oliverdelange.instabugtest V/IB-InstabugDelegate: Checking if should show welcome message, firstRun false, SettingsManager.getInstance().getWelcomeMessageState() LIVE
+2021-12-03 15:51:09.300 18868-21849/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: start saving app_features
+2021-12-03 15:51:09.310 18868-21851/uk.co.oliverdelange.instabugtest D/IB-ActionsOrchestrator: runAction
+2021-12-03 15:51:09.310 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:09.310 18868-21851/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:09.318 18868-21823/uk.co.oliverdelange.instabugtest D/IB-CrashPlugin: CrashPlugin SESSION event with value started received
+2021-12-03 15:51:09.318 18868-21823/uk.co.oliverdelange.instabugtest D/IB-CrashReportingUtility: isCrashReportingEnabled ? ENABLED
+2021-12-03 15:51:09.319 18868-21851/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: update
+2021-12-03 15:51:09.319 18868-21849/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: finish saving app_features
+2021-12-03 15:51:09.320 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:09.321 18868-21823/uk.co.oliverdelange.instabugtest V/IB-b: receive new core event: type: session, value: started
+2021-12-03 15:51:09.328 18868-21854/uk.co.oliverdelange.instabugtest D/IB-ActionsOrchestrator: runAction
+2021-12-03 15:51:09.338 18868-21855/uk.co.oliverdelange.instabugtest W/IB-InstabugDelegate: current user is not identified
+2021-12-03 15:51:09.339 18868-21823/uk.co.oliverdelange.instabugtest I/IB-SessionsSyncManager: Skipping sessions evaluation. Elapsed time since last sync = 12 mins. Sync configs = {syncIntervalsInMinutes = 720, maxSessionsPerRequest = 10, syncMode = 2}
+2021-12-03 15:51:09.339 18868-21823/uk.co.oliverdelange.instabugtest I/IB-SessionsSyncManager: Syncing local with remote. Sync configs = {syncIntervalsInMinutes = 720, maxSessionsPerRequest = 10, syncMode = 2}
+2021-12-03 15:51:09.352 18868-21823/uk.co.oliverdelange.instabugtest D/IB-CrashPlugin: CrashPlugin wake
+2021-12-03 15:51:09.352 18868-21823/uk.co.oliverdelange.instabugtest D/IB-CrashReportingUtility: isCrashReportingEnabled ? ENABLED
+2021-12-03 15:51:09.357 18868-21856/uk.co.oliverdelange.instabugtest D/IB-ActionsOrchestrator: runAction
+2021-12-03 15:51:09.358 18868-21857/uk.co.oliverdelange.instabugtest D/IB-InstabugNetworkLogDbHelper: trim
+2021-12-03 15:51:09.359 18868-21848/uk.co.oliverdelange.instabugtest I/IB-SessionsSyncManager: No sessions ready for sync. Skipping...
+2021-12-03 15:51:09.361 18868-21858/uk.co.oliverdelange.instabugtest D/IB-Instabug-NDKCrashReporting: Session started with id 0934a8ba-7600-475a-9041-5ae70e901559
+2021-12-03 15:51:09.362 18868-21858/uk.co.oliverdelange.instabugtest D/IB-Instabug-NDKCrashReporting: Path created: /storage/emulated/0/Android/data/uk.co.oliverdelange.instabugtest/files/instabug/ndk/0934a8ba-7600-475a-9041-5ae70e901559
+2021-12-03 15:51:09.362 18868-21823/uk.co.oliverdelange.instabugtest V/IB-SurveyPlugin: initialize Instabug Surveys Manager
+2021-12-03 15:51:09.362 18868-21858/uk.co.oliverdelange.instabugtest V/IB-Instabug-NDKCrashReporting: Start NDK periodic snapshot capture
+2021-12-03 15:51:09.363 18868-21857/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: trim
+2021-12-03 15:51:09.363 18868-21857/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:09.363 18868-21857/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:09.363 18868-21861/uk.co.oliverdelange.instabugtest V/IB-Instabug-NDKCrashReporting: Capturing snapshot
+2021-12-03 15:51:09.364 18868-21858/uk.co.oliverdelange.instabugtest V/IB-Instabug-NDKCrashReporting: removing /storage/emulated/0/Android/data/uk.co.oliverdelange.instabugtest/files/instabug/ndk/bba28cd5-fc45-491c-88e1-d73f41070595
+2021-12-03 15:51:09.368 18868-21823/uk.co.oliverdelange.instabugtest V/IB-SurveysService: fetch surveys
+2021-12-03 15:51:09.368 18868-21860/uk.co.oliverdelange.instabugtest D/IB-ActionsOrchestrator: runAction
+2021-12-03 15:51:09.369 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:09.370 18868-21856/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUserEmail:
+2021-12-03 15:51:09.374 18868-21823/uk.co.oliverdelange.instabugtest V/IB-SurveysService: Request: Url: https://api.instabug.com/api/sdk/v3/surveys/v8?locale=en&application_token=38e30c6136df1ef5f0026b6fdc240375&uuid=4cb1119e-839f-4eaf-8381-2d5a5ee57353 | Method: GET
+2021-12-03 15:51:09.375 18868-21823/uk.co.oliverdelange.instabugtest V/IB-SurveysService: fetchingSurveysRequest started
+2021-12-03 15:51:09.376 18868-21823/uk.co.oliverdelange.instabugtest V/IB-SurveyPlugin: initialize Instabug Announcement Manager
+2021-12-03 15:51:09.377 18868-21823/uk.co.oliverdelange.instabugtest V/IB-b: fetch announcements
+2021-12-03 15:51:09.378 18868-21823/uk.co.oliverdelange.instabugtest V/IB-AnnouncementsService: Request: Url: https://api.instabug.com/api/sdk/v3/announcements/v2?locale=en&application_token=38e30c6136df1ef5f0026b6fdc240375&uuid=4cb1119e-839f-4eaf-8381-2d5a5ee57353 | Method: GET
+2021-12-03 15:51:09.379 18868-21865/uk.co.oliverdelange.instabugtest D/IB-InstabugBaseConnectionManagerImpl: Starting a request to url: https://api.instabug.com/api/sdk/v3/surveys/v8?locale=en&application_token=38e30c6136df1ef5f0026b6fdc240375&uuid=4cb1119e-839f-4eaf-8381-2d5a5ee57353
+2021-12-03 15:51:09.379 18868-21823/uk.co.oliverdelange.instabugtest V/IB-b: fetchingAnnouncementsRequest started
+2021-12-03 15:51:09.380 18868-21823/uk.co.oliverdelange.instabugtest D/IB-SurveyPlugin: Getting Country Code...
+2021-12-03 15:51:09.381 18868-21866/uk.co.oliverdelange.instabugtest D/IB-InstabugBaseConnectionManagerImpl: Starting a request to url: https://api.instabug.com/api/sdk/v3/announcements/v2?locale=en&application_token=38e30c6136df1ef5f0026b6fdc240375&uuid=4cb1119e-839f-4eaf-8381-2d5a5ee57353
+2021-12-03 15:51:09.383 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:09.390 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:09.392 18868-21823/uk.co.oliverdelange.instabugtest V/IB-d: checkingIsLiveApp started
+2021-12-03 15:51:09.393 18868-21864/uk.co.oliverdelange.instabugtest D/IB-b: {"id":75059,"title":"How likely are you to recommend Carv to a friend or colleague?","type":3,"options":["0","1","2","3","4","5","6","7","8","9","10"],"answer":"","answered_at":0}
+2021-12-03 15:51:09.394 18868-21864/uk.co.oliverdelange.instabugtest D/IB-b: {"id":75060,"title":"How can we do better?","type":0,"options":[],"answer":"","answered_at":0}
+2021-12-03 15:51:09.395 18868-21867/uk.co.oliverdelange.instabugtest D/IB-InstabugBaseConnectionManagerImpl: Starting a request to url: https://play.google.com/store/apps/details?id=uk.co.oliverdelange.instabugtest
+2021-12-03 15:51:09.397 18868-21867/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: BE_DISABLE_SIGNING return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.397 18868-21867/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: BE_DISABLE_SIGNING return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.397 18868-21867/uk.co.oliverdelange.instabugtest D/IB-NormalConnectionManager: Connect to: https://play.google.com/store/apps/details?id=uk.co.oliverdelange.instabugtest with normal type
+2021-12-03 15:51:09.399 18868-21866/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: BE_DISABLE_SIGNING return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.399 18868-21866/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: BE_DISABLE_SIGNING return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.400 18868-21823/uk.co.oliverdelange.instabugtest V/IB-InstabugDelegate: Disposing expired data
+2021-12-03 15:51:09.402 18868-21823/uk.co.oliverdelange.instabugtest V/IB-InstabugDelegate: run valid migration
+2021-12-03 15:51:09.402 18868-21864/uk.co.oliverdelange.instabugtest D/IB-a: 1 surveys have been retrieved from surveys_table
+2021-12-03 15:51:09.402 18868-21865/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: BE_DISABLE_SIGNING return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.403 18868-21865/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: BE_DISABLE_SIGNING return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.403 18868-21866/uk.co.oliverdelange.instabugtest D/IB-NormalConnectionManager: Connect to: https://api.instabug.com/api/sdk/v3/announcements/v2?locale=en&application_token=38e30c6136df1ef5f0026b6fdc240375&uuid=4cb1119e-839f-4eaf-8381-2d5a5ee57353 with normal type
+2021-12-03 15:51:09.404 18868-21865/uk.co.oliverdelange.instabugtest D/IB-NormalConnectionManager: Connect to: https://api.instabug.com/api/sdk/v3/surveys/v8?locale=en&application_token=38e30c6136df1ef5f0026b6fdc240375&uuid=4cb1119e-839f-4eaf-8381-2d5a5ee57353 with normal type
+2021-12-03 15:51:09.408 18868-21852/uk.co.oliverdelange.instabugtest D/IB-CrashPlugin: CrashPlugin SESSION event with value started received
+2021-12-03 15:51:09.409 18868-21823/uk.co.oliverdelange.instabugtest D/IB-MigrationManager: Checking if should apply this migration: last_contacted_at_migration, result is false last migration version is 4 target migration version 4
+2021-12-03 15:51:09.410 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:09.412 18868-21852/uk.co.oliverdelange.instabugtest D/IB-CrashReportingUtility: isCrashReportingEnabled ? ENABLED
+2021-12-03 15:51:09.412 18868-18868/uk.co.oliverdelange.instabugtest D/IB-InstabugNetworkReceiver: Network state changed
+2021-12-03 15:51:09.413 18868-21852/uk.co.oliverdelange.instabugtest V/IB-b: receive new core event: type: session, value: started
+2021-12-03 15:51:09.413 18868-18868/uk.co.oliverdelange.instabugtest D/IB-InstabugNetworkReceiver: ActiveNetwork not equal null, checking local cache
+2021-12-03 15:51:09.413 18868-21823/uk.co.oliverdelange.instabugtest D/IB-MigrationManager: Checking if should apply this migration: v2_cache_files_migration, result is false last migration version is 4 target migration version 4
+2021-12-03 15:51:09.413 18868-21823/uk.co.oliverdelange.instabugtest D/IB-MigrationManager: Checking if should apply this migration: last_contacted_at_to_last_bug_and_last_chat_time_migration, result is false last migration version is 4 target migration version 4
+2021-12-03 15:51:09.414 18868-18868/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Previously cached feature settings : {"ttl":0,"sdk_version":"10.10.1","hash":"9e849d0623cf0fbe58367876f11dad95"}
+2021-12-03 15:51:09.415 18868-18868/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Previously cached feature settings : {"ttl":0,"sdk_version":"10.10.1","hash":"9e849d0623cf0fbe58367876f11dad95"}
+2021-12-03 15:51:09.415 18868-18868/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Last fetched at is more than 0 millis, retrieve it again
+2021-12-03 15:51:09.416 18868-18868/uk.co.oliverdelange.instabugtest D/IB-FeaturesService: Getting enabled features for this application
+2021-12-03 15:51:09.416 18868-21823/uk.co.oliverdelange.instabugtest D/IB-MigrationManager: Checking if should apply this migration: sdk_backward_migration, result is false last migration version is 4 target migration version 4
+2021-12-03 15:51:09.418 18868-18868/uk.co.oliverdelange.instabugtest V/IB-FeaturesService: getAppFeatures request started
+2021-12-03 15:51:09.418 18868-18868/uk.co.oliverdelange.instabugtest D/IB-CrashPlugin: CrashPlugin NETWORK event with value activated received
+2021-12-03 15:51:09.418 18868-18868/uk.co.oliverdelange.instabugtest D/IB-CrashReportingUtility: isCrashReportingEnabled ? ENABLED
+2021-12-03 15:51:09.418 18868-18868/uk.co.oliverdelange.instabugtest D/IB-CrashPlugin: startCrashesUploaderService
+2021-12-03 15:51:09.419 18868-18868/uk.co.oliverdelange.instabugtest D/IB-CrashReportingUtility: isCrashReportingEnabled ? ENABLED
+2021-12-03 15:51:09.419 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:09.420 18868-21848/uk.co.oliverdelange.instabugtest D/IB-InstabugBaseConnectionManagerImpl: Starting a request to url: https://api.instabug.com/api/sdk/v3/features?application_token=38e30c6136df1ef5f0026b6fdc240375&uuid=4cb1119e-839f-4eaf-8381-2d5a5ee57353
+2021-12-03 15:51:09.421 18868-21823/uk.co.oliverdelange.instabugtest D/IB-MigrationManager: Checking if should apply this migration: sdk_forward_migration, result is false last migration version is 4 target migration version 4
+2021-12-03 15:51:09.422 18868-21823/uk.co.oliverdelange.instabugtest D/IB-MigrationManager: Checking if should apply this migration: sdk_analytics_migration, result is false last migration version is 4 target migration version 4
+2021-12-03 15:51:09.422 18868-18868/uk.co.oliverdelange.instabugtest V/IB-b: receive new core event: type: network, value: activated
+2021-12-03 15:51:09.422 18868-21823/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found user_attributes_memory_cache returning null
+2021-12-03 15:51:09.423 18868-21823/uk.co.oliverdelange.instabugtest V/IB-CacheManager: Caches to be migrated com.instabug.library.internal.storage.cache.OnDiskCache@8de7a54 - null
+2021-12-03 15:51:09.423 18868-21823/uk.co.oliverdelange.instabugtest D/IB-CacheManager: No cache with this ID was found user_attributes_memory_cache returning null
+2021-12-03 15:51:09.423 18868-21823/uk.co.oliverdelange.instabugtest D/IB-CacheManager: Invalidated migratingTo cache
+2021-12-03 15:51:09.423 18868-18868/uk.co.oliverdelange.instabugtest V/IB-InstabugBugsUploaderJob: Started
+2021-12-03 15:51:09.425 18868-21848/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: BE_DISABLE_SIGNING return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.425 18868-21848/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: isFeatureAvailable: BE_DISABLE_SIGNING return: DEFAULT_FEATURE_AVAILABILITY
+2021-12-03 15:51:09.425 18868-21823/uk.co.oliverdelange.instabugtest I/IB-CacheFileMemoryAvailablePredicate: CacheFileMemoryAvailablePredicate is running test, results: true
+2021-12-03 15:51:09.425 18868-21848/uk.co.oliverdelange.instabugtest D/IB-NormalConnectionManager: Connect to: https://api.instabug.com/api/sdk/v3/features?application_token=38e30c6136df1ef5f0026b6fdc240375&uuid=4cb1119e-839f-4eaf-8381-2d5a5ee57353 with normal type
+2021-12-03 15:51:09.426 18868-21823/uk.co.oliverdelange.instabugtest W/IB-CacheManager: Cache to migrate from doesn't contain any elements, not going further with the migration
+2021-12-03 15:51:09.426 18868-21823/uk.co.oliverdelange.instabugtest D/IB-g: Checking if old cache is existing and it's returning false
+2021-12-03 15:51:09.427 18868-21823/uk.co.oliverdelange.instabugtest D/IB-MigrationManager: Checking if should apply this migration: user_attributes_migration, result is false last migration version is 4 target migration version 4
+2021-12-03 15:51:09.429 18868-21823/uk.co.oliverdelange.instabugtest D/IB-MigrationManager: Checking if should apply this migration: vus_encryption_migration, result is false last migration version is 4 target migration version 4
+2021-12-03 15:51:09.429 18868-21823/uk.co.oliverdelange.instabugtest D/IB-MigrationManager: No migrations to run
+2021-12-03 15:51:09.429 18868-21823/uk.co.oliverdelange.instabugtest V/IB-InstabugDelegate: Registering broadcasts
+2021-12-03 15:51:09.430 18868-21823/uk.co.oliverdelange.instabugtest V/IB-InstabugDelegate: Preparing user state
+2021-12-03 15:51:09.431 18868-21823/uk.co.oliverdelange.instabugtest V/IB-InstabugDelegate: Initializing auto screen recording
+2021-12-03 15:51:09.432 18868-21878/uk.co.oliverdelange.instabugtest D/IB-BaseNetworkTask: a started network task
+2021-12-03 15:51:09.436 18868-21851/uk.co.oliverdelange.instabugtest D/IB-InstabugNetworkLogDbHelper: trim
+2021-12-03 15:51:09.437 18868-21840/uk.co.oliverdelange.instabugtest D/IB-ActionsOrchestrator: runAction
+2021-12-03 15:51:09.439 18868-21886/uk.co.oliverdelange.instabugtest W/IB-InstabugDelegate: current user is not identified
+2021-12-03 15:51:09.442 18868-21843/uk.co.oliverdelange.instabugtest D/IB-ActionsOrchestrator: runAction
+2021-12-03 15:51:09.443 18868-21878/uk.co.oliverdelange.instabugtest D/IB-BaseNetworkTask: Internet is good to go
+2021-12-03 15:51:09.445 18868-21882/uk.co.oliverdelange.instabugtest D/IB-CrashReportsDbHelper: getting Crashes Count
+2021-12-03 15:51:09.445 18868-21878/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Previously cached feature settings : {"ttl":0,"sdk_version":"10.10.1","hash":"9e849d0623cf0fbe58367876f11dad95"}
+2021-12-03 15:51:09.446 18868-21878/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Previously cached feature settings : {"ttl":0,"sdk_version":"10.10.1","hash":"9e849d0623cf0fbe58367876f11dad95"}
+2021-12-03 15:51:09.446 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:09.446 18868-18868/uk.co.oliverdelange.instabugtest D/IB-InvocationManager: current activity resumed
+2021-12-03 15:51:09.447 18868-18868/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.crash.CrashPlugin@6f62626
+2021-12-03 15:51:09.447 18868-18868/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.ndkcrash.NDKCrashPlugin@dd20267
+2021-12-03 15:51:09.447 18868-21878/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Last fetched at is more than 0 millis, retrieve it again
+2021-12-03 15:51:09.447 18868-18868/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.survey.SurveyPlugin@1d09814
+2021-12-03 15:51:09.447 18868-18868/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.chat.ChatPlugin@79f08bd
+2021-12-03 15:51:09.447 18868-18868/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.bug.BugPlugin@7b873b9
+2021-12-03 15:51:09.447 18868-21843/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUserEmail:
+2021-12-03 15:51:09.448 18868-21840/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUserEmail:
+2021-12-03 15:51:09.450 18868-21888/uk.co.oliverdelange.instabugtest D/IB-BaseNetworkTask: a started network task
+2021-12-03 15:51:09.454 18868-21888/uk.co.oliverdelange.instabugtest D/IB-BaseNetworkTask: Internet is good to go
+2021-12-03 15:51:09.456 18868-18868/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.featuresrequest.FeaturesRequestPlugin@f639275
+2021-12-03 15:51:09.456 18868-18868/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental Feature FEATURE_REQUESTS availability is false
+2021-12-03 15:51:09.456 18868-18868/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.apm.APMPlugin@1d78a7b
+2021-12-03 15:51:09.457 18868-18868/uk.co.oliverdelange.instabugtest V/IB-PresentationManager: screensList.size(): 0
+2021-12-03 15:51:09.457 18868-18868/uk.co.oliverdelange.instabugtest V/IB-PresentationManager: !InstabugCore.isForegroundBusy(): true
+2021-12-03 15:51:09.457 18868-18868/uk.co.oliverdelange.instabugtest V/IB-BaseNetworkTask: a finished
+2021-12-03 15:51:09.457 18868-21888/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Previously cached feature settings : {"ttl":0,"sdk_version":"10.10.1","hash":"9e849d0623cf0fbe58367876f11dad95"}
+2021-12-03 15:51:09.458 18868-21887/uk.co.oliverdelange.instabugtest W/IB-InstabugDelegate: current user is not identified
+2021-12-03 15:51:09.461 18868-21888/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Previously cached feature settings : {"ttl":0,"sdk_version":"10.10.1","hash":"9e849d0623cf0fbe58367876f11dad95"}
+2021-12-03 15:51:09.461 18868-21888/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Last fetched at is more than 0 millis, retrieve it again
+2021-12-03 15:51:09.461 18868-21823/uk.co.oliverdelange.instabugtest V/IB-InstabugDelegate: initialize Instabug InvocationMode Manager
+2021-12-03 15:51:09.462 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InvocationManager: initializing invocationManager
+2021-12-03 15:51:09.462 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.crash.CrashPlugin@6f62626
+2021-12-03 15:51:09.462 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.ndkcrash.NDKCrashPlugin@dd20267
+2021-12-03 15:51:09.462 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.survey.SurveyPlugin@1d09814
+2021-12-03 15:51:09.462 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.chat.ChatPlugin@79f08bd
+2021-12-03 15:51:09.462 18868-18868/uk.co.oliverdelange.instabugtest V/IB-BaseNetworkTask: a finished
+2021-12-03 15:51:09.462 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.bug.BugPlugin@7b873b9
+2021-12-03 15:51:09.470 18868-21851/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: trim
+2021-12-03 15:51:09.470 18868-21851/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:09.470 18868-21851/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:09.470 18868-21885/uk.co.oliverdelange.instabugtest D/IB-InstabugBugsUploaderJob: Found 0 bugs in cache
+2021-12-03 15:51:09.474 18868-21882/uk.co.oliverdelange.instabugtest D/IB-CrashPlugin: Found 0 cached crashes
+2021-12-03 15:51:09.478 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.featuresrequest.FeaturesRequestPlugin@f639275
+2021-12-03 15:51:09.478 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Experimental Feature FEATURE_REQUESTS availability is false
+2021-12-03 15:51:09.478 18868-21823/uk.co.oliverdelange.instabugtest V/IB-PluginsManager: plugin: com.instabug.apm.APMPlugin@1d78a7b
+2021-12-03 15:51:09.479 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InvocationManager: set instabug invocation event: NONE
+2021-12-03 15:51:09.479 18868-21823/uk.co.oliverdelange.instabugtest V/IB-b: receive new core event: type: sdk_state, value: built
+2021-12-03 15:51:09.479 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature USER_DATA state is already ENABLED ignoring
+2021-12-03 15:51:09.479 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature CONSOLE_LOGS state is already ENABLED ignoring
+2021-12-03 15:51:09.479 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature INSTABUG_LOGS state is already ENABLED ignoring
+2021-12-03 15:51:09.479 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature CRASH_REPORTING state is already ENABLED ignoring
+2021-12-03 15:51:09.479 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature IN_APP_MESSAGING state is already ENABLED ignoring
+2021-12-03 15:51:09.479 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature PUSH_NOTIFICATION state is already ENABLED ignoring
+2021-12-03 15:51:09.479 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature TRACK_USER_STEPS state is already ENABLED ignoring
+2021-12-03 15:51:09.480 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:09.480 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature REPRO_STEPS state is already ENABLED ignoring
+2021-12-03 15:51:09.480 18868-21823/uk.co.oliverdelange.instabugtest I/IB-VisualUserStepsStateHandler: setReproStepsState: ENABLED
+2021-12-03 15:51:09.480 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature VIEW_HIERARCHY_V2 state is already DISABLED ignoring
+2021-12-03 15:51:09.480 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature SURVEYS state is already ENABLED ignoring
+2021-12-03 15:51:09.480 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature USER_EVENTS state is already ENABLED ignoring
+2021-12-03 15:51:09.480 18868-21823/uk.co.oliverdelange.instabugtest V/IB-Builder: User data feature state is set to ENABLED
+2021-12-03 15:51:09.480 18868-21823/uk.co.oliverdelange.instabugtest V/IB-Builder: Console log feature state is set to ENABLED
+2021-12-03 15:51:09.480 18868-21823/uk.co.oliverdelange.instabugtest V/IB-Builder: Instabug logs feature state is set to ENABLED
+2021-12-03 15:51:09.480 18868-21823/uk.co.oliverdelange.instabugtest V/IB-Builder: Crash reporting feature state is set to ENABLED
+2021-12-03 15:51:09.480 18868-21823/uk.co.oliverdelange.instabugtest V/IB-Builder: In-App messaging feature state is set toENABLED
+2021-12-03 15:51:09.481 18868-21823/uk.co.oliverdelange.instabugtest V/IB-Builder: Push notification feature state is set to ENABLED
+2021-12-03 15:51:09.481 18868-21823/uk.co.oliverdelange.instabugtest V/IB-Builder: Tracking user steps feature state is set to ENABLED
+2021-12-03 15:51:09.481 18868-21823/uk.co.oliverdelange.instabugtest V/IB-Builder: Repro steps feature state is set to ENABLED
+2021-12-03 15:51:09.481 18868-21823/uk.co.oliverdelange.instabugtest V/IB-Builder: View hierarchy feature state is set to DISABLED
+2021-12-03 15:51:09.481 18868-21823/uk.co.oliverdelange.instabugtest V/IB-Builder: Surveys feature state is set to ENABLED
+2021-12-03 15:51:09.481 18868-21823/uk.co.oliverdelange.instabugtest V/IB-Builder: User events feature state is set to ENABLED
+2021-12-03 15:51:09.481 18868-21823/uk.co.oliverdelange.instabugtest V/IB-Builder: Instabug overall state is set to true
+2021-12-03 15:51:09.481 18868-21823/uk.co.oliverdelange.instabugtest D/IB-Instabug: Built
+2021-12-03 15:51:09.485 18868-21823/uk.co.oliverdelange.instabugtest D/IB-InstabugFeaturesManager: Feature CRASH_REPORTING state is already ENABLED ignoring
+2021-12-03 15:51:09.487 18868-21823/uk.co.oliverdelange.instabugtest D/IB-CrashPlugin: CrashPlugin FEATURE event with value updated received
+2021-12-03 15:51:09.487 18868-21823/uk.co.oliverdelange.instabugtest D/IB-CrashReportingUtility: isCrashReportingEnabled ? ENABLED
+2021-12-03 15:51:09.487 18868-21823/uk.co.oliverdelange.instabugtest D/IB-CrashReportingUtility: isCrashReportingEnabled ? ENABLED
+2021-12-03 15:51:09.488 18868-21823/uk.co.oliverdelange.instabugtest V/IB-b: receive new core event: type: features, value: updated
+2021-12-03 15:51:09.627 18868-21867/uk.co.oliverdelange.instabugtest D/IB-NormalConnectionManager: Request response code: 404
+2021-12-03 15:51:09.629 18868-21867/uk.co.oliverdelange.instabugtest E/IB-NormalConnectionManager: https://play.google.com/store/apps/details?id=uk.co.oliverdelange.instabugtest
+    java.io.FileNotFoundException: https://play.google.com/store/apps/details?id=uk.co.oliverdelange.instabugtest
+        at com.android.okhttp.internal.huc.HttpURLConnectionImpl.getInputStream(HttpURLConnectionImpl.java:255)
+        at com.android.okhttp.internal.huc.DelegatingHttpsURLConnection.getInputStream(DelegatingHttpsURLConnection.java:211)
+        at com.android.okhttp.internal.huc.HttpsURLConnectionImpl.getInputStream(HttpsURLConnectionImpl.java:30)
+        at com.instabug.library.networkv2.connection.NormalConnectionManager.handleResponse(NormalConnectionManager.java:8)
+        at com.instabug.library.networkv2.NetworkManager.doRequest(NetworkManager.java:10)
+        at com.instabug.library.networkv2.NetworkManager.doRequest(NetworkManager.java:31)
+        at com.instabug.library.networkv2.ReactiveNetworkManager$a.subscribe(ReactiveNetworkManager.java:1)
+        at io.reactivex.internal.operators.observable.ObservableCreate.subscribeActual(ObservableCreate.java:40)
+        at io.reactivex.Observable.subscribe(Observable.java:12284)
+        at io.reactivex.internal.operators.observable.ObservableSubscribeOn$SubscribeTask.run(ObservableSubscribeOn.java:96)
+        at io.reactivex.Scheduler$DisposeTask.run(Scheduler.java:578)
+        at io.reactivex.internal.schedulers.ScheduledRunnable.run(ScheduledRunnable.java:66)
+        at io.reactivex.internal.schedulers.ScheduledRunnable.call(ScheduledRunnable.java:57)
+        at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+        at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:301)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1167)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641)
+        at java.lang.Thread.run(Thread.java:923)
+2021-12-03 15:51:09.629 18868-21867/uk.co.oliverdelange.instabugtest V/IB-NormalConnectionManager: Request response:
+2021-12-03 15:51:09.629 18868-21867/uk.co.oliverdelange.instabugtest V/IB-d: checkingIsLiveApp onNext, Response code: 404
+2021-12-03 15:51:09.630 18868-21867/uk.co.oliverdelange.instabugtest V/IB-d: checkingIsLiveApp completed
+2021-12-03 15:51:09.630 18868-21867/uk.co.oliverdelange.instabugtest D/IB-NetworkManager: Network request completed successfully
+2021-12-03 15:51:09.746 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUserEmail:
+2021-12-03 15:51:09.747 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUsername:
+2021-12-03 15:51:09.748 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:09.750 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugNetworkLogDbHelper: retrieveNetworkLogs
+2021-12-03 15:51:09.752 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:09.752 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:09.752 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:09.752 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:09.754 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:09.754 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:09.754 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:09.810 18868-21861/uk.co.oliverdelange.instabugtest D/IB-Instabug-NDKCrashReporting: Snapshot captured
+2021-12-03 15:51:09.811 18868-21865/uk.co.oliverdelange.instabugtest D/IB-NormalConnectionManager: Request response code: 200
+2021-12-03 15:51:09.812 18868-21865/uk.co.oliverdelange.instabugtest V/IB-SurveysService: fetchingSurveysRequest onNext, Response code: 200
+2021-12-03 15:51:09.854 18868-21848/uk.co.oliverdelange.instabugtest D/IB-NormalConnectionManager: Request response code: 304
+2021-12-03 15:51:09.854 18868-21866/uk.co.oliverdelange.instabugtest D/IB-NormalConnectionManager: Request response code: 200
+2021-12-03 15:51:09.854 18868-21848/uk.co.oliverdelange.instabugtest V/IB-NormalConnectionManager: Request response:
+2021-12-03 15:51:09.854 18868-21848/uk.co.oliverdelange.instabugtest D/IB-FeaturesService: getAppFeatures: Response code: 304, Response body:
+2021-12-03 15:51:09.854 18868-21848/uk.co.oliverdelange.instabugtest D/IB-FeaturesService: Features list did not get modified. Moving on...
+2021-12-03 15:51:09.855 18868-21848/uk.co.oliverdelange.instabugtest D/IB-d: Features fetch response is null
+2021-12-03 15:51:09.855 18868-21866/uk.co.oliverdelange.instabugtest V/IB-NormalConnectionManager: Request response: {"published":[],"paused":[]}
+2021-12-03 15:51:09.855 18868-21848/uk.co.oliverdelange.instabugtest V/IB-FeaturesService: getAppFeatures request completed
+2021-12-03 15:51:09.855 18868-21866/uk.co.oliverdelange.instabugtest V/IB-AnnouncementsService: Response: Response code: 200, Response body: {"published":[],"paused":[]}
+2021-12-03 15:51:09.855 18868-21848/uk.co.oliverdelange.instabugtest D/IB-NetworkManager: Network request completed successfully
+2021-12-03 15:51:09.855 18868-21866/uk.co.oliverdelange.instabugtest V/IB-b: fetchingAnnouncementsRequest onNext, Response code: 200
+2021-12-03 15:51:09.856 18868-21866/uk.co.oliverdelange.instabugtest D/IB-AnnouncementManager: Announcement Fetching Passed
+2021-12-03 15:51:09.860 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:09.861 18868-21866/uk.co.oliverdelange.instabugtest V/IB-b: fetchingAnnouncementsRequest completed
+2021-12-03 15:51:09.861 18868-21866/uk.co.oliverdelange.instabugtest D/IB-NetworkManager: Network request completed successfully
+2021-12-03 15:51:14.364 18868-21861/uk.co.oliverdelange.instabugtest V/IB-Instabug-NDKCrashReporting: Capturing snapshot
+2021-12-03 15:51:14.534 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUserEmail:
+2021-12-03 15:51:14.535 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUsername:
+2021-12-03 15:51:14.535 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:14.536 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugNetworkLogDbHelper: retrieveNetworkLogs
+2021-12-03 15:51:14.538 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:14.538 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:14.538 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:14.538 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:14.539 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:14.539 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:14.539 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:14.575 18868-21861/uk.co.oliverdelange.instabugtest D/IB-Instabug-NDKCrashReporting: Snapshot captured
+2021-12-03 15:51:19.364 18868-21861/uk.co.oliverdelange.instabugtest V/IB-Instabug-NDKCrashReporting: Capturing snapshot
+2021-12-03 15:51:19.523 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUserEmail:
+2021-12-03 15:51:19.523 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUsername:
+2021-12-03 15:51:19.524 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:19.525 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugNetworkLogDbHelper: retrieveNetworkLogs
+2021-12-03 15:51:19.526 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:19.526 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:19.526 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:19.526 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:19.527 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:19.527 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:19.527 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:19.557 18868-21861/uk.co.oliverdelange.instabugtest D/IB-Instabug-NDKCrashReporting: Snapshot captured
+2021-12-03 15:51:19.842 18868-21865/uk.co.oliverdelange.instabugtest I/IB-SurveysValidator: timeTriggeredSurveys: 1
+2021-12-03 15:51:19.842 18868-21865/uk.co.oliverdelange.instabugtest I/IB-SurveysValidator: getAllValidSurveys(availableSurveys: 1)
+2021-12-03 15:51:19.842 18868-21865/uk.co.oliverdelange.instabugtest I/IB-SurveysValidator: validSurveys: 0
+2021-12-03 15:51:19.843 18868-21865/uk.co.oliverdelange.instabugtest I/IB-SurveysValidator: validSurveys: 0
+2021-12-03 15:51:19.843 18868-21865/uk.co.oliverdelange.instabugtest I/IB-SurveysValidator: no valid time-triggered surveys. Returning null...
+2021-12-03 15:51:19.843 18868-21865/uk.co.oliverdelange.instabugtest V/IB-SurveysService: fetchingSurveysRequest completed
+2021-12-03 15:51:19.843 18868-21865/uk.co.oliverdelange.instabugtest D/IB-NetworkManager: Network request completed successfully
+2021-12-03 15:51:24.364 18868-21861/uk.co.oliverdelange.instabugtest V/IB-Instabug-NDKCrashReporting: Capturing snapshot
+2021-12-03 15:51:24.514 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUserEmail:
+2021-12-03 15:51:24.515 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUsername:
+2021-12-03 15:51:24.515 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:24.517 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugNetworkLogDbHelper: retrieveNetworkLogs
+2021-12-03 15:51:24.518 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:24.518 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:24.518 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:24.518 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:24.519 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:24.519 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:24.519 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:24.546 18868-21861/uk.co.oliverdelange.instabugtest D/IB-Instabug-NDKCrashReporting: Snapshot captured
+2021-12-03 15:51:29.364 18868-21861/uk.co.oliverdelange.instabugtest V/IB-Instabug-NDKCrashReporting: Capturing snapshot
+2021-12-03 15:51:29.538 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUserEmail:
+2021-12-03 15:51:29.540 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUsername:
+2021-12-03 15:51:29.540 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:29.541 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugNetworkLogDbHelper: retrieveNetworkLogs
+2021-12-03 15:51:29.543 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:29.543 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:29.543 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:29.543 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:29.544 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:29.544 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:29.544 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:29.569 18868-21861/uk.co.oliverdelange.instabugtest D/IB-Instabug-NDKCrashReporting: Snapshot captured
+2021-12-03 15:51:34.364 18868-21861/uk.co.oliverdelange.instabugtest V/IB-Instabug-NDKCrashReporting: Capturing snapshot
+2021-12-03 15:51:34.529 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUserEmail:
+2021-12-03 15:51:34.531 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUsername:
+2021-12-03 15:51:34.534 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:34.534 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugNetworkLogDbHelper: retrieveNetworkLogs
+2021-12-03 15:51:34.536 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:34.536 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:34.536 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:34.536 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:34.537 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:34.537 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:34.537 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:34.566 18868-21861/uk.co.oliverdelange.instabugtest D/IB-Instabug-NDKCrashReporting: Snapshot captured
+2021-12-03 15:51:39.364 18868-21861/uk.co.oliverdelange.instabugtest V/IB-Instabug-NDKCrashReporting: Capturing snapshot
+2021-12-03 15:51:39.540 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUserEmail:
+2021-12-03 15:51:39.541 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUsername:
+2021-12-03 15:51:39.542 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:39.543 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugNetworkLogDbHelper: retrieveNetworkLogs
+2021-12-03 15:51:39.544 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:39.544 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:39.544 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:39.544 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:39.545 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:39.545 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:39.545 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:39.570 18868-21861/uk.co.oliverdelange.instabugtest D/IB-Instabug-NDKCrashReporting: Snapshot captured
+2021-12-03 15:51:44.364 18868-21861/uk.co.oliverdelange.instabugtest V/IB-Instabug-NDKCrashReporting: Capturing snapshot
+2021-12-03 15:51:44.521 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUserEmail:
+2021-12-03 15:51:44.523 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUsername:
+2021-12-03 15:51:44.525 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:44.525 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugNetworkLogDbHelper: retrieveNetworkLogs
+2021-12-03 15:51:44.527 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:44.527 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:44.527 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:44.528 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:44.528 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:44.528 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:44.528 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:44.555 18868-21861/uk.co.oliverdelange.instabugtest D/IB-Instabug-NDKCrashReporting: Snapshot captured
+2021-12-03 15:51:49.364 18868-21861/uk.co.oliverdelange.instabugtest V/IB-Instabug-NDKCrashReporting: Capturing snapshot
+2021-12-03 15:51:49.515 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUserEmail:
+2021-12-03 15:51:49.516 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUsername:
+2021-12-03 15:51:49.516 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:49.517 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugNetworkLogDbHelper: retrieveNetworkLogs
+2021-12-03 15:51:49.519 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:49.519 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:49.519 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:49.519 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:49.521 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:49.521 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:49.521 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:49.546 18868-21861/uk.co.oliverdelange.instabugtest D/IB-Instabug-NDKCrashReporting: Snapshot captured
+2021-12-03 15:51:54.364 18868-21861/uk.co.oliverdelange.instabugtest V/IB-Instabug-NDKCrashReporting: Capturing snapshot
+2021-12-03 15:51:54.545 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUserEmail:
+2021-12-03 15:51:54.546 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUsername:
+2021-12-03 15:51:54.548 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:54.549 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugNetworkLogDbHelper: retrieveNetworkLogs
+2021-12-03 15:51:54.551 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:54.552 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:54.552 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:54.552 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:54.553 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:54.553 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:54.553 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:54.578 18868-21861/uk.co.oliverdelange.instabugtest D/IB-Instabug-NDKCrashReporting: Snapshot captured
+2021-12-03 15:51:59.364 18868-21861/uk.co.oliverdelange.instabugtest V/IB-Instabug-NDKCrashReporting: Capturing snapshot
+2021-12-03 15:51:59.505 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUserEmail:
+2021-12-03 15:51:59.505 18868-21861/uk.co.oliverdelange.instabugtest V/IB-UserManager: getIdentifiedUsername:
+2021-12-03 15:51:59.506 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:59.507 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugNetworkLogDbHelper: retrieveNetworkLogs
+2021-12-03 15:51:59.508 18868-21850/uk.co.oliverdelange.instabugtest V/IB-UserDbHelper: retrieve
+2021-12-03 15:51:59.509 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:59.509 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:59.509 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:59.510 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: retrieve
+2021-12-03 15:51:59.510 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: forceInsertSuspendedLogs
+2021-12-03 15:51:59.510 18868-21861/uk.co.oliverdelange.instabugtest D/IB-InstabugLogDbHelper: insertInstabugLogs
+2021-12-03 15:51:59.534 18868-21861/uk.co.oliverdelange.instabugtest D/IB-Instabug-NDKCrashReporting: Snapshot captured
