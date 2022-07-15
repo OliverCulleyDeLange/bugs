@@ -1,0 +1,8 @@
+syntax = "proto3";
+package analytics;
+option java_package = "com.example.test.custom";
+
+message CustomSrc {
+  string s = 1;
+}
+

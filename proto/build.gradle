@@ -42,7 +42,8 @@ dependencies {
 
 
 protobuf {
-    generatedFilesBaseDir = "$projectDir/gen"
+// Uncomment to place generated kotlin protos in protos/gen - doesn't seem to affect the bug though
+//    generatedFilesBaseDir = "$projectDir/gen"
     protoc {
         /** Use a downloaded version of protoc so you don't have to download and install on your machine */
         if (osdetector.os == "osx") {
@@ -58,6 +59,13 @@ protobuf {
     }
     generateProtoTasks {
         ofNonTest().each { task ->
+            task.group = "proto"
+            // The generateProto task does not seem to properly clean its previously generated outputs.
+            // See https://github.com/google/protobuf-gradle-plugin/issues/332
+            // See https://github.com/google/protobuf-gradle-plugin/issues/331
+            task.doFirst {
+                delete task.outputs
+            }
             task.builtins {
                 remove java // Don't output generated java proto bindings. We only want the kotlin
             }
@@ -71,11 +79,6 @@ protobuf {
     }
 }
 
-clean {
-    delete protobuf.generatedFilesBaseDir
-}
-
-// Put proto generation tasks in their own group so they're easier to find
-tasks.withType(com.google.protobuf.gradle.GenerateProtoTask) {
-    group = "proto"
-}
+//clean {
+//    delete protobuf.generatedFilesBaseDir
+//}
